@@ -1,4 +1,5 @@
 
+//LeetCode题目: 26_删除排序数组中的重复项
 //给定一个排序数组，你需要在 原地 删除重复出现的元素，使得每个元素只出现一次，返回移除后数组的新长度。 
 //
 // 不要使用额外的数组空间，你必须在 原地 修改输入数组 并在使用 O(1) 额外空间的条件下完成。 
@@ -42,36 +43,52 @@
 //}
 // 
 // Related Topics 数组 双指针 
-// 👍 1523 👎 0
+// 👍 1526 👎 0
 
-package com.cloud._40_algorithm.leetcode.editor.cn;
+package editor.cn;
 
-public class RemoveDuplicatesFromSortedArray {
+public class _26_RemoveDuplicatesFromSortedArray {
     public static void main(String[] args) {
-        Solution solution = new RemoveDuplicatesFromSortedArray().new Solution();
+        Solution solution = new _26_RemoveDuplicatesFromSortedArray().new Solution();
     }
-
     //leetcode submit region begin(Prohibit modification and deletion)
 
     /**
-     * 方法一：一次循环，双指针法
+     * 方法二 记录重复值
      */
     class Solution {
         public int removeDuplicates(int[] nums) {
-            if (nums != null && nums.length <= 1) {
-                return nums.length;
+            //判断0
+            if (nums.length == 0) {
+                return 0;
             }
-
-            //记录返回数组指针
-            int j = 0;
-            for (int i = 1; i < nums.length; i++) {
-                if (nums[j] != nums[i]) {
-                    j++;
-                    nums[j] = nums[i];
+            int count = 0, len = nums.length;
+            for (int i = 1; i < len; i++) {
+                if (nums[i] == nums[i - 1]) {
+                    count++;
+                } else {
+                    nums[i - count] = nums[i];
                 }
             }
-            return j + 1;
+            return len - count;
         }
+//    /**
+//     * 方法一 快慢指针法
+//     */
+//    class Solution {
+//    public int removeDuplicates(int[] nums) {
+//        //判断0
+//        if(nums.length == 0){
+//            return 0;
+//        }
+//        int i = 0; //慢指针
+//        for (int j = 1; j < nums.length; j++) {
+//            if(nums[i] != nums[j]){
+//                nums[++i] = nums[j];
+//            }
+//        }
+//        return i+1;
+//    }
     }
 //leetcode submit region end(Prohibit modification and deletion)
 
