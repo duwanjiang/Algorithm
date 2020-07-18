@@ -60,7 +60,7 @@ public class _141_LinkedListCycle {
     //leetcode submit region begin(Prohibit modification and deletion)
 
     /**
-     * 方法一 快慢指针
+     * 方法二 快慢指针
      * 时间复杂度：O（n）
      * 空间复杂度：O（1）
      */
