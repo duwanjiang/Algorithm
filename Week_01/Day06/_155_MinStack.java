@@ -65,7 +65,7 @@ public class _155_MinStack {
     //leetcode submit region begin(Prohibit modification and deletion)
 
     /**
-     * 方法一 辅助栈和数据栈不同步
+     * 方法二 辅助栈和数据栈不同步
      * 时间复杂度：O（1）
      * 空间复杂度：O（n）
      */

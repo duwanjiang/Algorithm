@@ -1,5 +1,6 @@
+# 学习心得
 
-学习笔记
+这是我第一次静下心来学习算法，通过覃超老师的深情讲解，让我明白了算法的重要性，也明白了算法是作为编程人员的内功，算法也是一切系统的基础，它能很好的解决我们生活中的问题，所有编程语言的工具包中都充满着各种算法，所以学好算法有助于我们更好的使用工具，更好的写出高性能的代码，也能更好的理解计算机这个系统。学习算法也是一个枯燥的过程，需要我们坚持练习，不断的精进，才能对算法乐然于心，所以加油吧，开始我们的算法之旅。
 # 一、学习方法
 ## 1、精通一个领域
 1. Chunk it up 切碎知识点
@@ -499,37 +500,35 @@ class Solution {
 
 固定3个指针中最左（最小）数字的指针 k，双指针 i，j 分设在数组索引(k, len(nums))(k,len(nums))两端，通过双指针交替向中间移动，记录对于每个固定指针 k 的所有满足 nums[k] + nums[i] + nums[j] == 0 的 i,j 组合，[详解参考地址](https://leetcode-cn.com/problems/3sum/solution/3sumpai-xu-shuang-zhi-zhen-yi-dong-by-jyd/)，代码如下：
 ```java
+/**
+ * 方法二 2层遍历-双指针夹逼法
+ * 时间复杂度：O（n^2）
+ * 空间复杂度：O（1）
+ */
 class Solution {
     public List<List<Integer>> threeSum(int[] nums) {
-        if (nums == null || nums.length < 3) {
-            return Collections.emptyList();
-        }
-        //双指针法都需要排序
+        if (nums.length == 0 || nums.length < 3) return Collections.emptyList();
+        List<List<Integer>> set = new ArrayList<>();
+        //排序
         Arrays.sort(nums);
-        List list = new ArrayList();
-        //a + b = -c
         for (int k = 0; k < nums.length - 2; k++) {
-            if (nums[k] > 0) break; //因为nums[j] > nums[i] > nums[k] > 0 则 a+b+c>0不能得到结果
-            if (k > 0 && nums[k] == nums[k - 1]) continue; //去除重复元素，防止得到重复结果
-            //i,j指针分别指向k后的一头一尾
-            int i = k + 1, j = nums.length - 1;
+            if (nums[k] > 0) break; //最小元素不能大于0
+            if (k > 0 && nums[k] == nums[k - 1]) continue; //去除重复元素
+            int i = k + 1, j = nums.length - 1; //双指针 i < j
             while (i < j) {
-                int sum = nums[i] + nums[j] + nums[k];
+                int sum = nums[k] + nums[i] + nums[j];
                 if (sum < 0) {
-                    //表示i++，并跳过所有重复的nums[i]；
-                    while (i < j && nums[i] == nums[++i]) ;
+                    while (i < j && nums[i] == nums[++i]); //去除重复元素,并右移i
                 } else if (sum > 0) {
-                    //表示j--，并跳过所有重复的nums[j]；
-                    while (i < j && nums[j] == nums[--j]) ;
+                    while (i < j && nums[j] == nums[--j]); //去除重复元素,并左移j
                 } else {
-                    //记录组合[k, i, j]至res，执行i += 1和j -= 1并跳过所有重复的nums[i]和nums[j]，防止记录到重复组合。
-                    list.add(Arrays.asList(nums[i], nums[j], nums[k]));
-                    while (i < j && nums[i] == nums[++i]) ;
-                    while (i < j && nums[j] == nums[--j]) ;
+                    set.add(Arrays.asList(nums[k] , nums[i] , nums[j]));
+                    while (i < j && nums[i] == nums[++i]); //去除重复元素,并右移i
+                    while (i < j && nums[j] == nums[--j]); //去除重复元素,并左移j
                 }
             }
         }
-        return list;
+        return new ArrayList<>(set);
     }
 }
 ```
@@ -676,6 +675,561 @@ class Solution {
             head = firstNode.next; //jump
         }
         return dump.next;
+    }
+}
+```
+## [21_合并两个有序链表](https://leetcode-cn.com/problems/merge-two-sorted-lists/)
+### 方法一 迭代
+> 时间复杂度：O（n）
+> 空间复杂度：O（1）
+
+我们可以用迭代的方法来实现上述算法。当 l1 和 l2 都不是空链表时，判断 l1 和 l2 哪一个链表的头节点的值更小，将较小值的节点添加到结果里，当一个节点被添加到结果里之后，将对应链表中的节点向后移一位
+``` java
+/**
+ * 方法一 迭代
+ * 时间复杂度：O（n）
+ * 空间复杂度：O（1）
+ */
+class Solution {
+    public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        if (l1 == null) return l2;
+        if (l2 == null) return l1;
+        ListNode newHead = new ListNode(0);
+        ListNode preNode = newHead;
+        while (l1 != null && l2 != null) {
+            //依次比较2个链表的元素大小,小的next -> 大的节点；大的节点指向
+            if (l1.val < l2.val) {
+                preNode.next = l1;
+                l1 = l1.next;
+            } else {
+                preNode.next = l2;
+                l2 = l2.next;
+            }
+            preNode = preNode.next;
+        }
+        //将最后不为空的节点合并就可以了
+        preNode.next = l1 == null ? l2 : l1;
+        return newHead.next;
+    }
+}
+```
+
+### 方法二 递归
+> 时间复杂度：O（n）
+> 空间复杂度：O（n）
+
+如果 l1 或者 l2 一开始就是空链表 ，那么没有任何操作需要合并，所以我们只需要返回非空链表。否则，我们要判断 l1 和 l2 哪一个链表的头节点的值更小，然后递归地决定下一个添加到结果里的节点。如果两个链表有一个为空，递归结束。
+```java
+/**
+ * 方法三 递归-简洁
+  * 时间复杂度：O（n）
+  * 空间复杂度：O（n）
+  */
+class Solution {
+    public ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+           //终止条件
+          if (l1 == null || l2 == null) return l2 == null ? l1 : l2;
+          ListNode smaller = l1.val < l2.val ? l1 : l2;
+          smaller.next = mergeTwoLists(smaller.next, smaller == l2 ? l1 : l2);
+          return smaller;
+    }
+}
+```
+
+## [141_环形链表](https://leetcode-cn.com/problems/linked-list-cycle/)
+### 方法一 哈希hash
+> 时间复杂度：O（n）
+> 空间复杂度：O（n）
+
+我们可以通过检查一个结点此前是否被访问过来判断链表是否为环形链表。常用的方法是使用哈希表。
+```java
+/**
+ * 方法一 hash
+ * 时间复杂度：O（n）
+ * 空间复杂度：O（n）
+ */
+public class Solution {
+    public boolean hasCycle(ListNode head) {
+        if (head == null || head.next == null) return false;
+        Set<ListNode> set = new HashSet<>();
+        while (head != null){
+            if(set.contains(head)){
+                return true;
+            }else{
+                set.add(head);
+            }
+            head = head.next;
+        }
+        return false;
+    }
+}
+```
+### 方法二 双指针
+> 时间复杂度：O（n）
+> 空间复杂度：O（1）
+
+现在考虑一个环形链表，把慢指针和快指针想象成两个在环形赛道上跑步的运动员（分别称之为慢跑者与快跑者）。而快跑者最终一定会追上慢跑者。这是为什么呢？考虑下面这种情况（记作情况 A）- 假如快跑者只落后慢跑者一步，在下一次迭代中，它们就会分别跑了一步或两步并相遇。
+``` java
+/**
+ * 方法二 快慢指针
+  * 时间复杂度：O（n）
+  * 空间复杂度：O（1）
+  */
+public class Solution {
+    public boolean hasCycle(ListNode head) {
+    if (head == null || head.next == null) return false;
+    ListNode slowNode = head;
+    ListNode fastNode = head.next;
+    while (slowNode != fastNode) {
+    //终止条件
+    if (fastNode == null || fastNode.next == null) {
+        return false;
+    }
+        slowNode = slowNode.next;
+    fastNode = fastNode.next.next;
+    }
+          return true;
+    }
+}
+```
+
+## [142_环形链表 II](https://leetcode-cn.com/problems/linked-list-cycle-ii/)
+### 方法一 hash
+> 时间复杂度：O（n）
+> 空间复杂度：O（n）
+
+如果我们用一个 `Set` 保存已经访问过的节点，我们可以遍历整个列表并返回第一个出现重复的节点
+```java
+/**
+ * 方法一 hash
+ * 时间复杂度：O（n）
+ * 空间复杂度：O（n）
+ */
+public class Solution {
+    public ListNode detectCycle(ListNode head) {
+        if (head == null || head.next == null) return null;
+        Set<ListNode> set = new HashSet<>();
+        while (head != null) {
+            if (set.contains(head)) {
+                return head;
+            } else {
+                set.add(head);
+            }
+            head = head.next;
+        }
+        return null;
+    }
+}
+```
+
+### 方法二 Floyd算法
+> 时间复杂度：O（n）
+> 空间复杂度：O（1）
+
+floyd 的算法被划分成两个不同的 _阶段_ 。在第一阶段，找出列表中是否有环，如果没有环，可以直接返回 `null` 并退出。否则，用 `相遇节点` 来找到环的入口。[详细解法参考](https://leetcode-cn.com/problems/linked-list-cycle-ii/solution/huan-xing-lian-biao-ii-by-leetcode/)
+```java
+/**
+ * 方法二 Floyd算法
+ * 时间复杂度：O（n）
+ * 空间复杂度：O（1）
+ */
+public class Solution {
+    public ListNode detectCycle(ListNode head) {
+        if (head == null || head.next == null) return null;
+        ListNode slowNode = head, fastNode = head;
+        while (true) {
+            if (fastNode == null || fastNode.next == null) {
+                return null;
+            }
+            slowNode = slowNode.next;
+            fastNode = fastNode.next.next;
+            if (slowNode == fastNode) break;
+        }
+        fastNode = head;
+        while (slowNode != fastNode) {
+            slowNode = slowNode.next;
+            fastNode = fastNode.next;
+        }
+        return fastNode;
+    }
+}
+```
+#  五、栈、队列
+## [20_有效的括号](https://leetcode-cn.com/problems/valid-parentheses/)
+### 方法一  stack+hash
+> 时间复杂度：O（n）
+> 空间复杂度：O（1）
+
+通过将左括号压入栈中，当遇到右括号时匹配栈顶括号是否匹配，匹配则出栈，不匹配则退出。
+```java
+/**
+ * 方法一 stack
+ * 时间复杂度：O（n）
+ * 空间复杂度：O（1）
+ */
+class Solution {
+    public boolean isValid(String s) {
+        if (s == null) return false;
+        if (s.length() == 0) return true;
+        Stack<Character> stack = new Stack<>();
+        Map<Character, Character> map = new HashMap();
+        map.put(')', '(');
+        map.put(']', '[');
+        map.put('}', '{');
+        for (int i = 0; i < s.length(); i++) {
+            Character c = s.charAt(i);
+            if (map.containsKey(c)) {
+                Character top = stack.isEmpty() ? '$' : stack.pop();
+                if (!top.equals(map.get(c))) {
+                    return false;
+                }
+            } else {
+                stack.push(c);
+            }
+        }
+        return stack.isEmpty();
+    }
+}
+
+```
+
+## [155_最小栈](https://leetcode-cn.com/problems/min-stack/)
+### 方法一  辅助栈和数据栈同步
+> 时间复杂度：O（1）
+> 空间复杂度：O（n）
+
+使用栈和数据同步栈来做核心，代码如下：
+``` java
+/**
+ * 方法一 辅助栈和数据栈同步
+ * 时间复杂度：O（1）
+ * 空间复杂度：O（n）
+ */
+class MinStack {
+    private Deque<Integer> deque;
+    private Stack<Integer> minStack;
+    /**
+     * initialize your data structure here.
+     */
+    public MinStack() {
+        deque = new LinkedList<>();
+        minStack = new Stack<>();
+    }
+    public void push(int x) {
+        this.deque.addFirst(x);
+        if (!minStack.isEmpty() && minStack.peek() < x) {
+            minStack.push(minStack.peek());
+        } else {
+            minStack.push(x);
+        }
+    }
+    public void pop() {
+        this.deque.removeFirst();
+        this.minStack.pop();
+    }
+    public int top() {
+        return this.deque.peek();
+    }
+    public int getMin() {
+        return minStack.peek();
+    }
+}
+```
+### 方法二  辅助栈和数据栈不同步
+> 时间复杂度：O（1）
+> 空间复杂度：O（n）
+
+使用栈和数据不同步栈来做核心，代码如下：
+``` java
+/**
+ * 方法二 辅助栈和数据栈不同步
+ * 时间复杂度：O（1）
+ * 空间复杂度：O（n）
+ */
+class MinStack {
+    private Deque<Integer> deque;
+    private Deque<Integer> minDeque;
+    /**
+     * initialize your data structure here.
+     */
+    public MinStack() {
+        deque = new LinkedList<>();
+        minDeque = new LinkedList<>();
+    }
+    public void push(int x) {
+        deque.addFirst(x);
+        if (minDeque.isEmpty() || minDeque.peek() >= x) {
+            minDeque.addFirst(x);
+        }
+    }
+    public void pop() {
+        if (!deque.isEmpty()) {
+            int top = deque.removeFirst();
+            if (top == minDeque.peekFirst()) {
+                minDeque.removeFirst();
+            }
+        }
+    }
+    public int top() {
+        if (deque.isEmpty()) {
+            throw new RuntimeException("当前栈为空");
+        }
+        return deque.peekFirst();
+    }
+    public int getMin() {
+        if (minDeque.isEmpty()) {
+            throw new RuntimeException("当前栈为空");
+        }
+        return minDeque.peekFirst();
+    }
+}
+```
+## [84_柱状图中最大的矩形](https://leetcode-cn.com/problems/largest-rectangle-in-histogram/)
+### 方法一 暴力求解
+> 时间复杂度：O（n^2）
+> 空间复杂度：O（1）
+```java
+/**
+ * 方法一 暴力求解
+ * 时间复杂度：O（n^2）
+ * 空间复杂度：O（1）
+ */
+class Solution {
+    public int largestRectangleArea(int[] heights) {
+        if (heights.length == 0) return 0;
+        int maxArea = 0;
+        for (int i = 0; i < heights.length; i++) {
+            int height = heights[i];
+            //向右找当大于等于当前柱子高的下标
+            int right = i;
+            while (right < heights.length - 1 && height <= heights[right + 1]) right++;
+            //向左找当大于等于当前柱子高的下标
+            int left = i;
+            while (left > 0 && height <= heights[left - 1]) left--;
+            int width = right - left + 1;
+            maxArea = Math.max(maxArea, width * height);
+        }
+        return maxArea;
+    }
+}
+```
+### 方法二 栈
+> 时间复杂度：O（n）
+> 空间复杂度：O（n）
+```java
+/**
+ * 方法二 栈
+ * 时间复杂度：O（n）
+ * 空间复杂度：O（n）
+ */
+class Solution {
+    public int largestRectangleArea(int[] heights) {
+        int res = 0;
+        Deque<Integer> stack = new ArrayDeque<>();
+        //为了便于用同一公式计算宽度
+        //通过栈来存储右边边界，即height[i]>=height[i+1]
+        for (int i = 0; i <= heights.length; i++) {
+            int height = i == heights.length ? 0 : heights[i]; //防止下标越界
+            //当到达右边边界时,依次计算从最大高度到最低高度的面积，随着高度较低，宽度也会同时增加
+            while (!stack.isEmpty() && heights[stack.peek()] > height) {
+                int cur = stack.pop();
+                int width = stack.isEmpty() ? i : i - stack.peekFirst() - 1;
+                res = Math.max(res, width * heights[cur]);
+            }
+            stack.push(i);
+        }
+        return res;
+    }
+}
+```
+### 方法三 array-模拟栈
+> 时间复杂度：O（n）
+> 空间复杂度：O（n）
+```java
+/**
+ * 方法三 array-模拟栈
+ * 时间复杂度：O（n）
+ * 空间复杂度：O（n）
+ */
+class Solution {
+    public int largestRectangleArea(int[] heights) {
+        int res = 0;
+        int[] stack = new int[heights.length + 1];
+        int index = -1;
+        //通过栈来存储右边边界，即height[i]>=height[i+1]
+        for (int i = 0; i <= heights.length; i++) {
+            int height = (i == heights.length) ? 0 : heights[i];
+            //当到达右边边界时,依次计算从最大高度到最低高度的面积，随着高度较低，宽度也会同时增加
+            while (index != -1 && heights[stack[index]] > height) {
+                int curHeight = heights[stack[index--]];
+                int width = index == -1 ? i : i - stack[index] - 1;
+                res = Math.max(res, width * curHeight);
+            }
+            stack[++index] = i;
+        }
+        return res;
+    }
+}
+
+```
+# 六、哈希、映射
+## [49_字母异位词分组](https://leetcode-cn.com/problems/group-anagrams/)
+### 方法一  排序+hash
+> 时间复杂度：O（NKlogK）
+> 空间复杂度：O（NK）
+
+```java
+/**
+ * 方法一 排序+hash
+ * 时间复杂度：O（NKlogK）
+ * 空间复杂度：O（NK）
+ */
+class Solution {
+    public List<List<String>> groupAnagrams(String[] strs) {
+        if (strs == null || strs.length <= 0) return Collections.emptyList();
+        HashMap<String, List<String>> map = new HashMap<>();
+        for (String str : strs) {
+            //对每个单词排序，并放入hash的key进行存储
+            char[] chars = str.toCharArray();
+            Arrays.sort(chars);
+            String key = String.valueOf(chars);
+            if (!map.containsKey(key)) map.put(key, new ArrayList<>());
+            map.get(key).add(str);
+        }
+        return new ArrayList<>(map.values());
+    }
+}
+```
+### 方法二  array + 计数分类
+> 时间复杂度：O（NK）
+> 空间复杂度：O（NK）
+
+```java
+/**
+ * 方法二 array + 计数分类
+ * 时间复杂度：O（NK）
+ * 空间复杂度：O（NK）
+ */
+class Solution {
+    public List<List<String>> groupAnagrams(String[] strs) {
+        if (strs == null || strs.length <= 0) return Collections.emptyList();
+        HashMap<String, List<String>> map = new HashMap<>();
+        for (String str : strs) {
+            int[] count = new int[26];
+            //这里利用异位词中相同的字母-'a'得到相同数字，即数组下标相同，从而得到count数组相同
+            for (char c : str.toCharArray()) count[c - 'a']++;
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < count.length; i++) {
+                sb.append(count[i]);
+            }
+            String key = sb.toString(); //所以这里的异位词的key相同
+            if (!map.containsKey(key)) map.put(key, new ArrayList<>());
+            map.get(key).add(str);
+        }
+        return new ArrayList<>(map.values());
+    }
+}
+```
+
+## [242_有效的字母异位词](https://leetcode-cn.com/problems/valid-anagram/)
+### 方法一 暴力- 排序+对比
+> 时间复杂度：O（NlogN）
+> 空间复杂度：O（1）
+
+```java
+/**
+ * 方法一 暴力- 排序+对比
+ * 时间复杂度：O（NlogN）
+ * 空间复杂度：O（1）
+ */
+class Solution {
+    public boolean isAnagram(String s, String t) {
+        if(s == null || t == null) return false;
+        if(s.length() != t.length()) return false;
+        char[] sChars = s.toCharArray();
+        char[] tChars = t.toCharArray();
+        Arrays.sort(sChars);
+        Arrays.sort(tChars);
+        return Arrays.equals(sChars,tChars);
+    }
+}
+
+```
+### 方法二 array+出现次数
+> 时间复杂度：O（n）
+> 空间复杂度：O（1）
+
+```java
+/**
+ * 方法二 array+出现次数
+ * 时间复杂度：O（n）
+ * 空间复杂度：O（1）
+ */
+class Solution {
+    public boolean isAnagram(String s, String t) {
+        if(s == null || t == null) return false;
+        if(s.length() != t.length()) return false;
+        int[] chars = new int[26]; //记录26个字母
+        for (int i = 0; i < s.length(); i++) {
+            chars[s.charAt(i) - 'a']++;
+            chars[t.charAt(i) - 'a']--;
+        }
+        for (int c :chars){
+            if(c != 0) return false;
+        }
+        return true;
+    }
+}
+```
+### 方法三 array+出现次数
+> 时间复杂度：O（n）
+> 空间复杂度：O（1）
+
+```java
+/**
+ * 方法三 array+出现次数
+ * 时间复杂度：O（n）
+ * 空间复杂度：O（1）
+ */
+class Solution {
+    public boolean isAnagram(String s, String t) {
+        if(s == null || t == null) return false;
+        if(s.length() != t.length()) return false;
+        int[] chars = new int[26]; //记录26个字母
+        for (int i = 0; i < s.length(); i++) {
+            chars[s.charAt(i) - 'a']++;
+        }
+        for (int i = 0; i < t.length(); i++) {
+            chars[t.charAt(i) - 'a']--;
+            if(chars[t.charAt(i) - 'a'] < 0) return false;
+        }
+        return true;
+    }
+}
+```
+### 方法四 hash+出现次数
+> 时间复杂度：O（n）
+> 空间复杂度：O（1）
+
+```java
+/**
+ * 方法四 hash+出现次数
+ * 时间复杂度：O（n）
+ * 空间复杂度：O（1）
+ */
+class Solution {
+    public boolean isAnagram(String s, String t) {
+        if (s == null || t == null) return false;
+        if (s.length() != t.length()) return false;
+        Map<Character, Integer> map = new HashMap<>();
+        for (int i = 0; i < s.length(); i++) {
+            map.put(s.charAt(i), map.getOrDefault(s.charAt(i), 0) + 1);
+            map.put(t.charAt(i), map.getOrDefault(t.charAt(i), 0) - 1);
+        }
+        for (int value : map.values()) {
+            if (value != 0) return false;
+        }
+        return true;
     }
 }
 ```
