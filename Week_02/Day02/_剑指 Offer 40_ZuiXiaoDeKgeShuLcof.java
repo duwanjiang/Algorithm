@@ -67,7 +67,7 @@ public class _JZ_Offer_40_ZuiXiaoDeKgeShuLcof {
 //     * 方法四 二叉搜索树
 //     * 类似于二叉堆，获取树中的最大值进行比较
 //     * 时间复杂度：O（NlogK）
-//     * 空间复杂度：O（logn）
+//     * 空间复杂度：O（k）
 //     */
 //    class Solution {
 //        public int[] getLeastNumbers(int[] arr, int k) {
@@ -165,7 +165,7 @@ public class _JZ_Offer_40_ZuiXiaoDeKgeShuLcof {
 //     * 方法二 堆
 //     * 取最小值用大顶堆，最大值用最小堆
 //     * 时间复杂度：O（NlogK）
-//     * 空间复杂度：O（logn）
+//     * 空间复杂度：O（k）
 //     */
 //    class Solution {
 //        public int[] getLeastNumbers(int[] arr, int k) {
