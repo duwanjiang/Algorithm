@@ -30,10 +30,8 @@
 
 package editor.cn;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.PriorityQueue;
 
 public class _347_TopKFrequentElements {
     public static void main(String[] args) {
@@ -43,8 +41,8 @@ public class _347_TopKFrequentElements {
     //leetcode submit region begin(Prohibit modification and deletion)
 
     /**
-     * 方法一 桶排序
-     * 时间复杂度：O（n）
+     * 方法二 堆
+     * 时间复杂度：O（nlogk）
      * 空间复杂度：O（n）
      */
     class Solution {
@@ -56,25 +54,53 @@ public class _347_TopKFrequentElements {
             for (int i = 0; i < nums.length; i++) {
                 map.put(nums[i], map.getOrDefault(nums[i], 0) + 1);
             }
-            //使用数组进行次数下标记录
-            List<Integer>[] indexArr = new List[nums.length + 1];
-            for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
-                if (indexArr[entry.getValue()] == null) {
-                    indexArr[entry.getValue()] = new ArrayList();
-                }
-                indexArr[entry.getValue()].add(entry.getKey());
+            //使用小顶堆进行出现次数排序
+            PriorityQueue<Integer> heap = new PriorityQueue<Integer>((v1, v2) -> map.get(v1) - map.get(v2));
+            for (Integer key : map.keySet()) {
+                heap.add(key);
+                if (heap.size() > k) heap.poll();
             }
             //输出前k个元素
             int[] output = new int[k];
-            for (int i = indexArr.length - 1, j = 0; i >= 0 && j < k; i--) {
-                if (indexArr[i] == null) continue;
-                for (Integer item : indexArr[i]) {
-                    output[j++] = item;
-                }
+            for (int j = k - 1; j >= 0; j--) {
+                output[j] = heap.poll();
             }
             return output;
         }
     }
+//    /**
+//     * 方法一 桶排序
+//     * 时间复杂度：O（n）
+//     * 空间复杂度：O（n）
+//     */
+//    class Solution {
+//        public int[] topKFrequent(int[] nums, int k) {
+//            if (nums.length == 0 || k == 0) return new int[0];
+//            if (nums.length == 1) return nums;
+//            //将数据出现次数记录到hash表
+//            HashMap<Integer, Integer> map = new HashMap<>();
+//            for (int i = 0; i < nums.length; i++) {
+//                map.put(nums[i], map.getOrDefault(nums[i], 0) + 1);
+//            }
+//            //使用数组进行次数下标记录
+//            List<Integer>[] indexArr = new List[nums.length + 1];
+//            for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+//                if (indexArr[entry.getValue()] == null) {
+//                    indexArr[entry.getValue()] = new ArrayList();
+//                }
+//                indexArr[entry.getValue()].add(entry.getKey());
+//            }
+//            //输出前k个元素
+//            int[] output = new int[k];
+//            for (int i = indexArr.length - 1, j = 0; i >= 0 && j < k; i--) {
+//                if (indexArr[i] == null) continue;
+//                for (Integer item : indexArr[i]) {
+//                    output[j++] = item;
+//                }
+//            }
+//            return output;
+//        }
+//    }
 //leetcode submit region end(Prohibit modification and deletion)
 
 }
