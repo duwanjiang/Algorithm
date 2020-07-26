@@ -63,7 +63,7 @@ public class _429_NAryTreeLevelOrderTraversal {
     //leetcode submit region begin(Prohibit modification and deletion)
 
     /**
-     * 方法一 简化的广度优先搜索
+     * 方法二 简化的广度优先搜索
      * 时间复杂度：O（n）
      * 空间复杂度：O（n）
      */

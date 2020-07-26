@@ -73,7 +73,7 @@ public class _141_LinkedListCycle {
      * }
      */
     /**
-     * 方法一 hash
+     * 方法二 hash
      * 时间复杂度：O（n）
      * 空间复杂度：O（n）
      */
