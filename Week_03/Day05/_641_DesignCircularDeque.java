@@ -56,6 +56,9 @@ public class _641_DesignCircularDeque {
 
     /**
      * 方法一 数组
+     * 1. 容量+1
+     * 2. 尾指针不指向内容，所以添加尾元素时需要先赋值，后移动尾指针
+     * 3. 在计算下标时，通过 指针%capacity ，如果capacity为2的幂次，则可以 指针&(capacity - 1)
      * 时间复杂度：O（n）
      * 空间复杂度：O（n）
      */
