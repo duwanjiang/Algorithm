@@ -2,7 +2,7 @@
 ## 1、分治
 1. 找到并拆分子问题
 2. 将子问题合并起来
-3. 代码模板（参考：https://shimo.im/docs/zvlDqLLMFvcAF79A/read）
+3. 代码模板（参考：https://shimo.im/docs/zvlDqLLMFvcAF79A/read ）
 
 ```java
 public Object divideConquer(problem, param1, param2, ...){
