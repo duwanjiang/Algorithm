@@ -44,6 +44,8 @@
 
 package editor.cn;
 
+import java.util.HashSet;
+
 public class _142_LinkedListCycleIi {
     public static void main(String[] args) {
         Solution solution = new _142_LinkedListCycleIi().new Solution();
@@ -71,31 +73,51 @@ public class _142_LinkedListCycleIi {
  * }
  */
     /**
-     * 方法一  Floyd算法长短步
+     * 方法二 hash算法
      * 时间复杂度：O（n）
-     * 空间复杂度：O（1）
+     * 空间复杂度：O（n）
      */
     public class Solution {
         public ListNode detectCycle(ListNode head) {
             if (head == null || head.next == null) return null;
-            ListNode slowNode = head, fastNode = head;
-            // 通过长短步判断是否有环
-            while (true) {
-                if (fastNode == null || fastNode.next == null) return null;
-                slowNode = slowNode.next;
-                fastNode = fastNode.next.next;
-                if (slowNode == fastNode) break;
+            HashSet<Object> sets = new HashSet<>();
+            while (head.next != null){
+                if (sets.contains(head)) {
+                    return head;
+                }else{
+                    sets.add(head);
+                }
+                head = head.next;
             }
-            // 此时slow到环入口的步数与head到入口的步数相同
-            fastNode = head;
-            // 寻找入口
-            while (slowNode != fastNode) {
-                slowNode = slowNode.next;
-                fastNode = fastNode.next;
-            }
-            return fastNode;
+            return null;
         }
     }
+//    /**
+//     * 方法一  Floyd算法长短步
+//     * 时间复杂度：O（n）
+//     * 空间复杂度：O（1）
+//     */
+//    public class Solution {
+//        public ListNode detectCycle(ListNode head) {
+//            if (head == null || head.next == null) return null;
+//            ListNode slowNode = head, fastNode = head;
+//            // 通过长短步判断是否有环
+//            while (true) {
+//                if (fastNode == null || fastNode.next == null) return null;
+//                slowNode = slowNode.next;
+//                fastNode = fastNode.next.next;
+//                if (slowNode == fastNode) break;
+//            }
+//            // 此时slow到环入口的步数与head到入口的步数相同
+//            fastNode = head;
+//            // 寻找入口
+//            while (slowNode != fastNode) {
+//                slowNode = slowNode.next;
+//                fastNode = fastNode.next;
+//            }
+//            return fastNode;
+//        }
+//    }
 //leetcode submit region end(Prohibit modification and deletion)
 
 }
