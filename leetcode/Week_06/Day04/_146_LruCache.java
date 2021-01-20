@@ -37,7 +37,7 @@ import java.util.HashMap;
 
 public class _146_LruCache {
     public static void main(String[] args) {
-        LRUCache solution = new _146_LruCache().new LRUCache();
+        LRUCache solution = new _146_LruCache().new LRUCache(5);
     }
 
     //leetcode submit region begin(Prohibit modification and deletion)
